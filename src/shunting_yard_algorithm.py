@@ -3,7 +3,7 @@ import re
 
 PLUS_MINUS_OPS = "+-"
 MUL_DIV_OPS = "*/"
-VIRTUAL_OPS = "@#"
+VIRTUAL_OPS = "@#"  # some imaginary operators just for the purpose of demostration
 BIN_OPS = PLUS_MINUS_OPS + MUL_DIV_OPS + VIRTUAL_OPS
 
 def is_operand(token: str):
