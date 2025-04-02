@@ -1,73 +1,5 @@
 from collections import deque
 
-# def re2post(regex):
-#     """
-#     Convert infix regular expression to postfix notation.
-#     Insert '.' as explicit concatenation operator.
-#     """
-#     def precedence(op):
-#         """Helper function to determine operator precedence."""
-#         if op in ('|', '.'):
-#             return 1
-#         if op in ('*', '+', '?'):
-#             return 2
-#         return 0
-
-#     output = []  # Output list for postfix expression
-#     stack = []    # Stack for operators and parentheses
-#     nalt = 0      # Number of alternations
-#     natom = 0     # Number of atoms
-
-#     for c in regex:
-#         if c == '(':
-#             if natom > 1:
-#                 natom -= 1
-#                 output.append('.')
-#             stack.append((nalt, natom))
-#             nalt = 0
-#             natom = 0
-#         elif c == '|':
-#             if natom == 0:
-#                 raise ValueError("Invalid regular expression")
-#             while natom > 1:
-#                 natom -= 1
-#                 output.append('.')
-#             natom = 0  # important! 
-#             nalt += 1
-#         elif c == ')':
-#             if not stack:
-#                 raise ValueError("Invalid regular expression")
-#             if natom == 0:
-#                 raise ValueError("Invalid regular expression")
-#             while natom > 1:
-#                 natom -= 1
-#                 output.append('.')
-#             for _ in range(nalt):
-#                 output.append('|')
-#             nalt, natom = stack.pop()
-#             natom += 1
-#         elif c in ('*', '+', '?'):
-#             if natom == 0:
-#                 raise ValueError("Invalid regular expression")
-#             output.append(c)
-#         else:
-#             if natom > 1:
-#                 natom -= 1
-#                 output.append('.')
-#             output.append(c)
-#             natom += 1
-
-#     if stack:
-#         raise ValueError("Invalid regular expression")
-
-#     while natom > 1:
-#         natom -= 1
-#         output.append('.')
-#     for _ in range(nalt):
-#         output.append('|')
-
-#     return ''.join(output)
-
 # def precedence(op):
 #     """Helper function to determine operator precedence."""
 #     if op in ('|', '.'):
@@ -78,6 +10,7 @@ from collections import deque
 
 
 # def associativity(op):
+#     """Helper function to determine operator associativity."""
 #     if op == '|':
 #         return "RIGHT"
 #     return "LEFT"
