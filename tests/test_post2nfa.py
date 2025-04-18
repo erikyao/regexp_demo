@@ -1,5 +1,5 @@
 from src.post2nfa import post2nfa
-from src.nfa import LiteralState, AcceptState, SplitState
+from src.nfa_state import LiteralState, AcceptState, SplitState
 
 # import pytest
 # @pytest.fixture

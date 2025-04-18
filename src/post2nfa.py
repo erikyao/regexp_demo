@@ -1,4 +1,4 @@
-from .nfa import SplitState, LiteralState, AcceptState, State
+from .nfa_state import SplitState, LiteralState, AcceptState, State
 
 
 class _Nfa:
