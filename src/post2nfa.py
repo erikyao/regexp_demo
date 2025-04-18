@@ -1,14 +1,12 @@
-
-from collections import deque
-from nfa import State, SplitState, LiteralState, AcceptState, Nfa
+from .nfa import SplitState, LiteralState, AcceptState, Nfa, State
 
 
-def post2nfa(postfix: str):
+def post2nfa(postfix: str | None) -> State | None:
     """
     Convert postfix regular expression to NFA using Thompson's construction algorithm.
     Returns the starting state of the NFA.
     
-    The algorithm uses a stack to keep track of NFA nfas, combining them according to the operators in the postfix expression."
+    The algorithm uses a stack to keep track of NFAs, combining them according to the operators in the postfix expression."
     """
 
     if postfix is None:
@@ -105,98 +103,3 @@ def post2nfa(postfix: str):
     assert final_nfa.is_closed()
 
     return final_nfa.start
-
-
-def assign_state_ids(start_state: State, start_id: int = 0):
-    """
-    Assigns an ID to each state in the NFA starting from `start_state`.
-    ID is incremented naturally from `start_id`.
-    Returns a map of {state : id}
-    """
-
-    id_map = dict()
-    _id = start_id
-
-    queue = deque([start_state])
-    visited = set()
-    while queue:  # BFS
-        state = queue.popleft()
-        
-        if state in visited:
-            continue
-
-        visited.add(state)
-
-        id_map[state] = _id
-        _id += 1
-
-        if isinstance(state, LiteralState):
-            queue.append(state.next_state)
-        elif isinstance(state, SplitState):
-            queue.append(state.next_state_1)
-            queue.append(state.next_state_2)
-        else:
-            continue
-
-    return id_map
-
-
-def nfa2str(start_state: State, start_id: int = 0):
-    output = []
-
-    id_map = assign_state_ids(start_state, start_id)
-    
-    queue = deque([start_state])
-    visited = set()
-    while queue:  # BFS
-        state = queue.popleft()
-        
-        if state in visited:
-            continue
-
-        _id = id_map[state]
-        visited.add(state)
-
-        if isinstance(state, LiteralState):
-            next_id = id_map[state.next_state]
-            
-            text = "[id:{:02d}][Lit] --- {} ---> [id:{:02d}]".format(_id, state.literal, next_id)
-            output.append(text)
-
-            queue.append(state.next_state)
-        elif isinstance(state, SplitState):
-            next_id_1 = id_map[state.next_state_1]
-            next_id_2 = id_map[state.next_state_2]
-
-            # '\u03B5' is the unicode for greek letter epsilon
-            text_1 = "[id:{:02d}][Spl] --- {} ---> [id:{:02d}]".format(_id, u'\u03B5', next_id_1)
-            # use `rjust` to align text_2 and text_1 to the right side
-            text_2 = "`-- {} ---> [id:{:02d}]".format(u'\u03B5', next_id_2).rjust(len(text_1))
-            
-            output.append(text_1)
-            output.append(text_2)
-
-            queue.append(state.next_state_1)
-            queue.append(state.next_state_2)
-        else:
-            text = "[id:{:02d}][Acc]".format(_id)
-            output.append(text)
-
-    return "\n".join(output)
-
-
-if __name__ == "__main__":
-    from re2post import re2post
-
-    # assert re2post("a(b|c)*d") == "abc|*.d."
-    # assert re2post("(a|b)*c(d|e)?") == "ab|*c.de|?."
-    # assert re2post("a+b?c*") == "a+b?.c*."
-
-    nfa = post2nfa(re2post("a(b|c)*d"))
-    print(nfa2str(nfa), end="\n-----------\n")
-
-    nfa = post2nfa(re2post("(a|b)*c(d|e)?"))
-    print(nfa2str(nfa), end="\n-----------\n")
-
-    nfa = post2nfa(re2post("a+b?c*"))
-    print(nfa2str(nfa), end="\n-----------\n")
