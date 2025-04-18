@@ -41,8 +41,10 @@ def nfa2str(start_state: State, assign_ids: bool = False, start_id: int = 0):
 
             queue.append(state.next_state_1)
             queue.append(state.next_state_2)
-        else:
+        elif isinstance(state, AcceptState):
             text = "[id:{:02d}][Acc]".format(_id)
             output.append(text)
+        else:
+            raise ValueError("Cannot recognize State class!")
 
     return "\n".join(output)
