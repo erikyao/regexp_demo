@@ -1,4 +1,22 @@
-from .nfa import SplitState, LiteralState, AcceptState, Nfa, State
+from .nfa import SplitState, LiteralState, AcceptState, State
+
+
+class _Nfa:
+    """
+    A partially built NFA without an accept state.
+    - start: starting state of the nfa
+    - ends: list of open States that need to be connected
+    """
+    def __init__(self, start: State, open_ends: list[State], accept: State = None):
+        self.start = start
+        self.open_ends = open_ends
+        self.accept = accept
+
+    def is_open(self):
+        return self.open_ends and (self.accept is None)
+
+    def is_closed(self):
+        return not self.is_open()
 
 
 def post2nfa(postfix: str | None) -> State | None:
@@ -6,9 +24,8 @@ def post2nfa(postfix: str | None) -> State | None:
     Convert postfix regular expression to NFA using Thompson's construction algorithm.
     Returns the starting state of the NFA.
     
-    The algorithm uses a stack to keep track of NFAs, combining them according to the operators in the postfix expression."
+    The algorithm uses a stack to keep track of NFAs, combining them according to the operators in the postfix.
     """
-
     if postfix is None:
         return None
     
@@ -36,22 +53,22 @@ def post2nfa(postfix: str | None) -> State | None:
             s = SplitState(nfa1.start, nfa2.start)
             
             # Combine the open ends from both NFAs
-            new_nfa = Nfa(s, nfa1.open_ends + nfa2.open_ends)
+            new_nfa = _Nfa(s, nfa1.open_ends + nfa2.open_ends)
             component_stack.append(new_nfa)
 
         elif c == '?':  # Zero or one
-            # Pop out one open Nfa and make it optional
+            # Pop out one open NFA and make it optional
             nfa = component_stack.pop()
             
             # Create a SPLIT state that can skip the nfa
             s = SplitState(nfa.start, None)
 
             # Combine nfa's ends with the new skip path
-            new_nfa = Nfa(s, nfa.open_ends + [s])  # s is an open end because s.next_state_2 is None
+            new_nfa = _Nfa(s, nfa.open_ends + [s])  # s is an open end because s.next_state_2 is None
             component_stack.append(new_nfa)
 
         elif c == '*':  # Zero or more
-            # Pop out one open Nfa and make it repeatable
+            # Pop out one open NFA and make it repeatable
             nfa = component_stack.pop()
             
             # Create a SPLIT state that loops back
@@ -61,12 +78,12 @@ def post2nfa(postfix: str | None) -> State | None:
             for end_state in nfa.open_ends:
                 end_state.transition_to(s)
             
-            # The new nfa can skip or loop
-            new_nfa = Nfa(s, [s])  # s is an open end because s.next_state_2 is None
+            # The new NFA can skip or loop
+            new_nfa = _Nfa(s, [s])  # s is an open end because s.next_state_2 is None
             component_stack.append(new_nfa)  
 
         elif c == '+':  # One or more
-            # Pop one open Nfa and make it repeatable (but must match at least once)
+            # Pop one open NFA and make it repeatable (but must match at least once)
             nfa = component_stack.pop()
             
             # Create a SPLIT state that loops back
@@ -83,11 +100,11 @@ def post2nfa(postfix: str | None) -> State | None:
             # Create a state that transitions on this character
             s = LiteralState(c, None)
             
-            # The nfa is just this state with one open end
-            new_nfa = Nfa(s, [s])
+            # The NFA is just this state with one open end
+            new_nfa = _Nfa(s, [s])
             component_stack.append(new_nfa)
 
-    # After processing all characters, we should have exactly one nfa left
+    # After processing all characters, we should have exactly one NFA left
     if len(component_stack) != 1:
         return None  # Invalid postfix expression
     

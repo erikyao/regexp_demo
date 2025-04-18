@@ -54,24 +54,6 @@ class AcceptState(State):
         raise NotImplementedError("Should not call this function on an accept state!")
 
 
-class Nfa:
-    """
-    A partially built NFA without an accept state.
-    - start: starting state of the nfa
-    - ends: list of open States that need to be connected
-    """
-    def __init__(self, start: State, open_ends: list[State], accept: State = None):
-        self.start = start
-        self.open_ends = open_ends
-        self.accept = accept
-
-    def is_open(self):
-        return self.open_ends and (self.accept is None)
-    
-    def is_closed(self):
-        return not self.is_open()
-
-
 def assign_state_ids(start_state: State, start_id: int = 0):
     """
     Assigns an ID to each state in the NFA starting from `start_state`.
