@@ -83,3 +83,49 @@ def assign_state_ids(start_state: State, start_id: int = 0):
             continue
 
     return
+
+
+def epsilon_closure(states: list[State]) -> set[State]:
+    if not states:
+        return None
+
+    closure = set()
+    stack = list(states)
+
+    while stack:
+        s = stack.pop()
+        if s not in closure:
+            closure.add(s)
+        else:
+            continue
+
+        # BFS style
+        if isinstance(s, SplitState):
+            stack.append(s.next_state_1)
+            stack.append(s.next_state_2)
+
+    return closure
+
+
+def epsilon_closure_recursive(states: list[State]) -> set[State]:
+    if not states:
+        return None
+
+    closure = set()
+
+    def _calculate_closure(_s: State):
+        nonlocal closure
+
+        if _s not in closure:
+            closure.add(_s)
+            if isinstance(_s, SplitState):
+                _calculate_closure(_s.next_state_1)
+                _calculate_closure(_s.next_state_2)
+
+        return
+
+    # DFS style
+    for s in states:
+        _calculate_closure(s)
+
+    return closure
