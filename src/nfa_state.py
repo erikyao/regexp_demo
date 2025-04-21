@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 from collections import deque
 
 
@@ -85,7 +86,7 @@ def assign_state_ids(start_state: State, start_id: int = 0):
     return
 
 
-def epsilon_closure(states: list[State]) -> set[State]:
+def epsilon_closure(states: Iterable[State]) -> set[State]:
     if not states:
         return None
 
@@ -107,7 +108,7 @@ def epsilon_closure(states: list[State]) -> set[State]:
     return closure
 
 
-def epsilon_closure_recursive(states: list[State]) -> set[State]:
+def epsilon_closure_recursive(states: Iterable[State]) -> set[State]:
     if not states:
         return None
 
